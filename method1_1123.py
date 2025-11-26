@@ -12,6 +12,7 @@ def activation(A):
 def activation_derivative(Y):
     return Y * (1.0 - Y)
 
+# Compute Big E over all training samples
 def calculate_overall_E(weights_biases, training_data):
     w1, w2, w3, w4, w5, w6, b1, b2, b3 = weights_biases
     
@@ -38,21 +39,64 @@ def calculate_overall_E(weights_biases, training_data):
     
     return total_E
 
-# --- 2. Training Function ---
+
+# Hard-code full dataset (Data Item 1–20)
+full_data = [
+    [0.90, 0.87, 1.0],   # 1
+    [1.81, 1.02, 0.0],   # 2
+    [1.31, 0.75, 1.0],   # 3
+    [2.36, 1.60, 0.0],   # 4
+    [2.48, 1.14, 0.0],   # 5
+    [2.17, 2.08, 1.0],   # 6
+    [0.41, 1.87, 0.0],   # 7
+    [2.85, 2.91, 1.0],   # 8
+    [2.45, 0.52, 0.0],   # 9
+    [1.05, 1.93, 0.0],   #10
+    [2.54, 2.97, 1.0],   #11
+    [2.32, 1.73, 0.0],   #12
+    [0.07, 0.09, 1.0],   #13
+    [1.86, 1.31, 0.0],   #14
+    [1.32, 1.96, 0.0],   #15
+    [1.45, 2.19, 0.0],   #16
+    [0.94, 0.34, 1.0],   #17
+    [0.28, 0.71, 1.0],   #18
+    [1.75, 2.21, 0.0],   #19
+    [2.49, 1.52, 0.0],   #20
+]
+
+# odd index → training, even index → testing
+training_data = [full_data[i] for i in range(0, len(full_data), 2)]
+testing_data  = [full_data[i] for i in range(1, len(full_data), 2)]
+
+# ============
+# Testing Eval
+# ============
+def evaluate_testing_data(weights_biases):
+    w1, w2, w3, w4, w5, w6, b1, b2, b3 = weights_biases
+
+    total_E = 0.0
+    print("\n--- Testing Predictions ---")
+
+    for idx, (x1, x2, d) in enumerate(testing_data):
+        a1 = w1 * x1 + w2 * x2 + b1
+        y1 = activation(a1)
+
+        a2 = w3 * x1 + w4 * x2 + b2
+        y2 = activation(a2)
+
+        a3 = w5 * y1 + w6 * y2 + b3
+        y3 = activation(a3)
+
+        E_p = 0.5 * (d - y3)**2
+        total_E += E_p
+
+        print(f"Test Item {idx+1}: x1={x1:.2f}, x2={x2:.2f}, d={d} --> y={y3:.6f}")
+
+    print(f"\nTesting Big E = {total_E:.9f}")
+    return total_E
+
+# --- Training Function ---
 def train_and_test_method1():
-    
-    training_data = [
-        [0.90, 0.87, 1.0], 
-        [1.31, 0.75, 1.0], 
-        [2.48, 1.14, 0.0], 
-        [0.41, 1.87, 0.0], 
-        [2.45, 0.52, 0.0], 
-        [2.54, 2.97, 1.0], 
-        [0.07, 0.09, 1.0], 
-        [1.32, 1.96, 0.0], 
-        [0.94, 0.34, 1.0], 
-        [1.75, 2.21, 0.0]
-    ]
     # --- 2.1 Initialization Function ---
     
     # Weight initialization
@@ -118,8 +162,8 @@ def train_and_test_method1():
             w4 = w4 + eta * delta2 * x2
             b2 = b2 + eta * delta2 # Hidden 2 bias update
 
-        current_weights = (w1, w2, w3, w4, w5, w6, b1, b2, b3)
-        overall_E = calculate_overall_E(current_weights, training_data)
+        weights = (w1, w2, w3, w4, w5, w6, b1, b2, b3)
+        overall_E = calculate_overall_E(weights, training_data)
     
     print("-" * 70)
     print(f"  w1={w1:.7f}, w2={w2:.7f}, w3={w3:.7f}, w4={w4:.7f}")
@@ -127,6 +171,8 @@ def train_and_test_method1():
     print(f"  b1={b1:.7f}, b2={b2:.7f}, b3={b3:.7f}")
     print(f"Overall Big E: {overall_E:.6f}")
     print("="*70)
-    
+
+    # Evaluate on testing data
+    evaluate_testing_data(weights)   
 
 train_and_test_method1()
