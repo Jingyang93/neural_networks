@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 # Set precision
 np.set_printoptions(precision=4, suppress=True)
 
@@ -168,17 +167,13 @@ def repeat_random_initializations(N=10000):
     print("Best weights =")
     print(best_weights)
 
+    # ---- NEW: Evaluate on Testing Data ----
+    print("\n========= TESTING PERFORMANCE =========")
+    test_E = evaluate_testing_data(best_weights)
+    print(f"Testing Big E = {test_E:.9f}")
+
     return best_E, best_weights
 
-    # print("-" * 70)
-    # print(f"  w1={w1:.7f}, w2={w2:.7f}, w3={w3:.7f}, w4={w4:.7f}")
-    # print(f"  w5={w5:.7f}, w6={w6:.7f}")
-    # print(f"  b1={b1:.7f}, b2={b2:.7f}, b3={b3:.7f}")
-    # print(f"Overall Big E: {overall_E:.6f}")
-    # print("="*70)
-
-    # # Evaluate on testing data
-    # evaluate_testing_data(weights)   
 
 train_and_test_method1()
 
